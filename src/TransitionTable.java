@@ -7,6 +7,11 @@ public class TransitionTable {
     HashMap<byte[], Integer> counts;
     Random random = new Random();
 
+    public TransitionTable() {
+        nextSlides = new HashMap<byte[], TransitionTable>();
+        counts = new HashMap<byte[], Integer>();
+    }
+
     public void addSlides(List<byte[]> slides)
     {
         byte[] firstSlide = slides.get(0);
@@ -17,8 +22,7 @@ public class TransitionTable {
             counts.put(firstSlide, counts.get(firstSlide) + 1);
         }
         if (slides.size() > 1) {
-            slides.remove(0);
-            nextSlides.get(firstSlide).addSlides(slides);
+            nextSlides.get(firstSlide).addSlides(slides.subList(1, slides.size()));
         }
     }
 
@@ -31,8 +35,12 @@ public class TransitionTable {
     }
 
     private byte[] getRandom() {
+        System.out.print("count ");
+        System.out.print(getTotalCount());
+        System.out.print("\n");
         int count = 0;
         int randn = random.nextInt(getTotalCount());
+
         for (HashMap.Entry<byte[], Integer> entry : counts.entrySet()) {
             count += entry.getValue();
             if (randn < count) {
@@ -43,10 +51,17 @@ public class TransitionTable {
     }
 
     public byte[] chooseSlide(List<byte[]> previousSlides) {
+        System.out.print("choose slide\n");
+        System.out.print("size : ");
+        System.out.print(previousSlides.size());
+        System.out.print("\n");
         if (previousSlides == null || previousSlides.size() == 0) {
+            System.out.print("return random\n");
             return getRandom();
         }
         byte[] fromSlide = previousSlides.remove(0);
+        System.out.print(new String(fromSlide));
+        System.out.print("\n");
         return nextSlides.get(fromSlide).chooseSlide(previousSlides);
     }
 }

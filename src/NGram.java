@@ -55,16 +55,37 @@ public class NGram {
         }
     }
 
-    // private TransitionTable buildTable(List<List<byte[]>> levels) {
-    //     TransitionTable table = new TransitionTable();
-    //     for (List<byte[]> level : levels) {
-    //         for (int i = 0; i < levels.size() - deepness; i++) {
-    //             for (int j = 0; j < deepness; j++) {
-    //             }
-    //         }
-    //     }
-    //     return table;
-    // }
+    private TransitionTable buildTable(List<List<byte[]>> levels) {
+        TransitionTable table = new TransitionTable();
+        List<byte[]> slides = new ArrayList<byte[]>();
+        for (List<byte[]> level : levels) {
+            slides.clear();
+            for (int i = 0; i < deepness + 1; i++) {
+                slides.add(level.get(i));
+            }
+            table.addSlides(slides);
+            for (int i = deepness + 1; i < levels.size(); i++) {
+                slides.remove(0);
+                slides.add(level.get(i));
+                table.addSlides(slides);
+            }
+        }
+        return table;
+    }
+
+    public List<byte[]> generate(int size) {
+        List<byte[]> level = new ArrayList<byte[]>();
+        for (int i = 0; i < size; i++) {
+            if (level.size() < deepness) {
+                level.add(table.chooseSlide(level));
+                System.out.print("-----\n");
+            } else {
+                level.add(table.chooseSlide(level.subList(level.size() - deepness, level.size())));
+                System.out.print("-----\n");
+            }
+        }
+        return level;
+    }
 
     public NGram(String directory, int deepness) {
         this.deepness = deepness;
@@ -77,5 +98,6 @@ public class NGram {
 
     public static void main(String[] args) {
         NGram ngram = new NGram("levels/original", 2);
+        List<byte[]> level = ngram.generate(30);
     }
 }
