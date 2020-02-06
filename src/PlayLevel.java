@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 
 import engine.core.MarioGame;
 import engine.core.MarioResult;
+import levelGenerators.ngram.NGram;
 
 public class PlayLevel {
     public static void printResults(MarioResult result) {
@@ -35,6 +36,8 @@ public class PlayLevel {
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         MarioGame game = new MarioGame();
         // printResults(game.playGame(getLevel("levels/original/lvl-1.txt"), 200, 0));
-        printResults(game.runGame(new agents.robinBaumgarten.Agent(), getLevel("levels/original/lvl-1.txt"), 20, 0, true));
+        // printResults(game.runGame(new agents.robinBaumgarten.Agent(), getLevel("levels/original/lvl-1.txt"), 20, 0, true));
+        String level = NGram.randomLevel();
+        printResults(game.runGame(new agents.robinBaumgarten.Agent(), level, 20, 0, true));
     }
 }

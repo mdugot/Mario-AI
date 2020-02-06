@@ -1,3 +1,5 @@
+package levelGenerators.ngram;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -5,6 +7,9 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.lang.StringBuilder;
+
+import levelGenerators.ngram.TransitionTable;
 
 public class NGram {
 
@@ -23,8 +28,6 @@ public class NGram {
             length += 1;
         }
         int height = content.length / length;
-        System.out.println(length);
-        System.out.println(height);
         for (byte ascii : content) {
              if (ascii == '\n') {
                 x = 0;
@@ -49,7 +52,6 @@ public class NGram {
                 getCorpusFiles(file, levels);
             }
             if (file.isFile() && file.getName().endsWith(".txt")) {
-                System.out.println(file.getPath());
                 try {
                     levels.add(parseLevelSlides(file));
                 } catch (IOException e) {
@@ -63,7 +65,6 @@ public class NGram {
         TransitionTable table = new TransitionTable(null);
         List<String> slides = new ArrayList<String>();
         for (List<String> level : levels) {
-            System.out.print("BUILD TABLE\n");
             slides.clear();
             for (int i = 0; i < deepness + 1; i++) {
                 slides.add(level.get(i));
@@ -83,12 +84,12 @@ public class NGram {
     }
 
     public List<String> generate(int size) {
-        List<String> level = new ArrayList<String>();
+        ArrayList<String> level = new ArrayList<String>();
         for (int i = 0; i < size; i++) {
             if (level.size() < deepness) {
-                level.add(table.chooseSlide(level, Math.min(deepness, size - i)));
+                level.add(table.chooseSlide((ArrayList)level.clone(), Math.min(deepness, size - i)));
             } else {
-                level.add(table.chooseSlide(level.subList(level.size() - deepness, level.size()), Math.min(deepness, size - i)));
+                level.add(table.chooseSlide(((ArrayList)level.clone()).subList(level.size() - deepness, level.size()), Math.min(deepness, size - i)));
             }
         }
         return level;
@@ -103,9 +104,23 @@ public class NGram {
         table = buildTable(levels);
     }
 
-    public static void main(String[] args) {
-        NGram ngram = new NGram("levels/original", 4);
+    public String format(List<String> level) {
+        StringBuilder builder = new StringBuilder("");
+        for (int i = 0; i < level.get(0).length(); i++) {
+            for (int j = 0; j < level.size(); j++) {
+                builder.append(level.get(j).charAt(i));
+            }
+            builder.append('\n');
+        }
+        System.out.println("size : " + level.size());
+        return builder.toString();
+    }
+
+    public static String randomLevel() {
+        NGram ngram = new NGram("levels/original", 7);
         System.out.print("GENERATE\n");
-        List<String> level = ngram.generate(80);
+        List<String> level = ngram.generate(200);
+        System.out.println("size : " + level.size());
+        return ngram.format(level);
     }
 }

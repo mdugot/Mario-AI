@@ -1,3 +1,5 @@
+package levelGenerators.ngram;
+
 import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
@@ -112,8 +114,8 @@ public class TransitionTable {
     public String chooseSlide(List<String> previousSlides, int deepness) {
         if (previousSlides == null || previousSlides.size() == 0) {
             String slide = getLogRandom(deepness);
-            System.out.print(slide);
-            System.out.print("\n");
+            // System.out.print(slide);
+            // System.out.print("\n");
             return slide;
         }
         String fromSlide = previousSlides.remove(0);
