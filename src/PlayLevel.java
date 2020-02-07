@@ -39,5 +39,6 @@ public class PlayLevel {
         // printResults(game.runGame(new agents.robinBaumgarten.Agent(), getLevel("levels/original/lvl-1.txt"), 20, 0, true));
         String level = NGram.randomLevel();
         printResults(game.runGame(new agents.robinBaumgarten.Agent(), level, 20, 0, true));
+        // printResults(game.runGame(new agents.doNothing.Agent(), level, 20 * 1000, 0, false));
     }
 }

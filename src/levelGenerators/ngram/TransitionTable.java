@@ -54,7 +54,7 @@ public class TransitionTable {
     }
 
     private boolean canContinueUntil(int steps) {
-        if (steps <= 1) {
+        if (steps < 1) {
             return true;
         }
         for (TransitionTable table : nextSlides.values()) {
@@ -114,8 +114,6 @@ public class TransitionTable {
     public String chooseSlide(List<String> previousSlides, int deepness) {
         if (previousSlides == null || previousSlides.size() == 0) {
             String slide = getLogRandom(deepness);
-            // System.out.print(slide);
-            // System.out.print("\n");
             return slide;
         }
         String fromSlide = previousSlides.remove(0);

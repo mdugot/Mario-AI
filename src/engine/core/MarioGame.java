@@ -246,6 +246,7 @@ public class MarioGame {
 
         ArrayList<MarioEvent> gameEvents = new ArrayList<>();
         ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
+        double startTime = System.nanoTime();
         while (this.world.gameStatus == GameStatus.RUNNING) {
             if (!this.pause) {
                 //get actions
@@ -279,6 +280,8 @@ public class MarioGame {
                 }
             }
         }
+        double stopTime = System.nanoTime();
+        System.out.println("Time : " + ((stopTime - startTime) / 1_000_000_000));
         return new MarioResult(this.world, gameEvents, agentEvents);
     }
 }
