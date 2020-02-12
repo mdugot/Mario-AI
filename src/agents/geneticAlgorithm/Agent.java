@@ -106,6 +106,12 @@ public class Agent implements MarioAgent {
                     individus.get(elit),
                     individus.get(idx),
                     mutationRate));
+                if (nextgen.size() < population) {
+                    nextgen.add(new BasicSolution(
+                        individus.get(idx),
+                        individus.get(elit),
+                        mutationRate));
+                }
             } else {
                 nextgen.add(new BasicSolution(
                     individus.get(elit),
@@ -119,11 +125,14 @@ public class Agent implements MarioAgent {
     }
 
     private void selectSolution() {
+        long startTime = System.nanoTime();
         for (int g = 0; g < generations; g++) {
             System.out.println("generation : " + g + "/" + generations);
             List<Integer> selection = selectForTournament();
             elit = runTournament(selection);
             generateNextGeneration();
         }
+        long duration = System.nanoTime() - startTime;
+        System.out.println("Selection time : "  + ((double)duration / (double)1_000_000_000));
     }
 }
