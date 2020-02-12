@@ -228,7 +228,6 @@ public class MarioGame {
         this.world.mario.isLarge = marioState > 0;
         this.world.mario.isFire = marioState > 1;
         this.world.update(new boolean[MarioActions.numberOfActions()]);
-        long currentTime = System.currentTimeMillis();
 
         //initialize graphics
         VolatileImage renderTarget = null;
@@ -244,6 +243,7 @@ public class MarioGame {
         MarioTimer agentTimer = new MarioTimer(MarioGame.maxTime);
         this.agent.initialize(new MarioForwardModel(this.world.clone()), agentTimer);
 
+        long currentTime = System.currentTimeMillis();
         ArrayList<MarioEvent> gameEvents = new ArrayList<>();
         ArrayList<MarioAgentEvent> agentEvents = new ArrayList<>();
         double startTime = System.nanoTime();
