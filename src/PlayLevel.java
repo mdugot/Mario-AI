@@ -33,13 +33,21 @@ public class PlayLevel {
     }
 
     public static void main(String[] args) {
+        long seed = -1;
+        if (args.length > 0) {
+            seed = Long.parseLong(args[0]);
+            System.out.println("Use seed " + seed);
+        }
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         MarioGame game = new MarioGame();
         // printResults(game.playGame(getLevel("levels/original/lvl-1.txt"), 200, 0));
         // printResults(game.runGame(new agents.robinBaumgarten.Agent(), getLevel("levels/original/lvl-1.txt"), 20, 0, true));
-        String level = NGram.randomLevel();
-        printResults(game.runGame(new agents.geneticAlgorithm.Agent(), level, 10, 0, true, 20));
-        //printResults(game.runGame(new agents.robinBaumgarten.Agent(), level, 20, 0, true));
-        // printResults(game.runGame(new agents.doNothing.Agent(), level, 20 * 1000, 0, false));
+
+        String level = NGram.randomLevel(150, seed);
+        printResults(game.runGame(new agents.geneticAlgorithm.RealTimeAgent(), level, 1000, 0, true, 15));
+
+        // printResults(game.runGame(new agents.robinBaumgarten.Agent(), level, 20, 0, true));
+        // printResults(game.runGame(new agents.geneticAlgorithm.RealTimeAgent(), getLevel("levels/original/lvl-13.txt"), 60, 0, true, 15));
+        // printResults(game.runGame(new agents.robinBaumgarten.Agent(), getLevel("levels/original/lvl-2.txt"), 60, 0, true, 15));
     }
 }

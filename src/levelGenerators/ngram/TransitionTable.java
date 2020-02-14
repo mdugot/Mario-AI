@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.Collections;
 import java.util.stream.IntStream;
 
@@ -70,7 +69,7 @@ public class TransitionTable {
         for (int n : IntStream.range(0, getTotalCount()).toArray()) {
             randRange.add(n);
         }
-        Collections.shuffle(randRange);
+        Collections.shuffle(randRange, NGram.rand);
         for (Integer randn : randRange) {
             int count = 0;
             for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
@@ -92,10 +91,9 @@ public class TransitionTable {
     }
 
     private String getLogRandom(int deepness) {
-        Random rand = new Random();
         while (counts.size() >= 1) {
             double totalLogCount = getTotalLogCount();
-            double randn = rand.nextDouble() * totalLogCount;
+            double randn = NGram.rand.nextDouble() * totalLogCount;
             double count = 0.0;
             for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
                 count += Math.log((double)entry.getValue() + 1);

@@ -36,7 +36,7 @@ public abstract class Solution {
     static Random random = new Random();
 
     private byte[] chromosome;
-    private List<MarioForwardModel> snapshots;
+    public List<MarioForwardModel> snapshots;
     private int last = -1;
 
     public Solution() {
@@ -44,32 +44,43 @@ public abstract class Solution {
         snapshots = new ArrayList<MarioForwardModel>();
         for (int i = 0; i < length; i++) {
             chromosome[i] = getRandomAction();
-            snapshots.add(null);
         }
     }
 
     public Solution(Solution parent, float mutationRate) {
+        this(parent, mutationRate, 0);
+    }
+
+    public Solution(Solution parent, float mutationRate, int slide) {
         this();
         for (int i = 0; i < length; i++) {
-            if (inMutationWindow(i) && random.nextFloat() < mutationRate) {
+            int j = i + slide;
+            if ((inMutationWindow(i) && random.nextFloat() < mutationRate) ||
+                j >= length) {
                 chromosome[i] = getMutation();
             } else {
-                chromosome[i] = parent.chromosome[i];
+                chromosome[i] = parent.chromosome[j];
             }
         }
     }
 
     public Solution(Solution parent1, Solution parent2, float mutationRate) {
+        this(parent1, parent2, mutationRate, 0);
+    }
+
+    public Solution(Solution parent1, Solution parent2, float mutationRate, int slide) {
         this();
-        int crossover = getCrossoverPoint();
+        int crossover = getCrossoverPoint(slide);
         for (int i = 0; i < length; i++) {
-            if (inMutationWindow(i) && random.nextFloat() < mutationRate) {
+            int j = i + slide;
+            if ((inMutationWindow(i) && random.nextFloat() < mutationRate) ||
+                j >= length) {
                 chromosome[i] = getMutation();
             } else {
-                if (i < crossover) {
-                    chromosome[i] = parent1.chromosome[i];
+                if (j < crossover) {
+                    chromosome[i] = parent1.chromosome[j];
                 } else {
-                    chromosome[i] = parent2.chromosome[i];
+                    chromosome[i] = parent2.chromosome[j];
                 }
             }
         }
@@ -106,12 +117,14 @@ public abstract class Solution {
         float score = 0;
         if (model.getGameStatus() == GameStatus.WIN) {
             score += 1024;
+        } else if (model.getGameStatus() != GameStatus.RUNNING) {
+            score -= 1024;
         }
+        score += model.getMarioFloatPos()[0] / 3;
         score += model.getKillsByStomp() * 12;
         score += model.getKillsByFire() * 4;
         score += model.getKillsByShell() * 17;
-        score += model.getMarioFloatPos()[0];
-        score += (300 - model.getMarioFloatPos()[1]) /10;
+        score += (300 - model.getMarioFloatPos()[1]) / 10;
         score += model.getMarioMode() * 32;
         score += model.getNumCollectedCoins() * 16;
         score += model.getNumCollectedMushrooms() * 58;
@@ -121,6 +134,8 @@ public abstract class Solution {
 
     protected abstract byte getRandomAction();
     protected abstract byte getMutation();
-    protected abstract int getCrossoverPoint();
+    protected abstract int getCrossoverPoint(int from);
     protected abstract boolean inMutationWindow(int index);
+
+    protected int getCrossoverPoint() {return getCrossoverPoint(0);}
 }

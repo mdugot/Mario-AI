@@ -49,9 +49,10 @@ public abstract class AgentBase implements MarioAgent {
         this.crossoverRate = crossoverRate;
         this.elitism = elitism;
         this.tournamentSize = (int)(this.population * this.tournamentRatio);
-        Solution.ticks = 20;
-        Solution.seconds = 5;
-        Solution.granularity = 5;
+        System.out.println("(original) Solution length : " + Solution.length);
+        Solution.ticks = ticks;
+        Solution.seconds = seconds;
+        Solution.granularity = granularity;
         Solution.length = (Solution.seconds * Solution.ticks) / Solution.granularity;
     }
 
@@ -90,16 +91,21 @@ public abstract class AgentBase implements MarioAgent {
     }
 
     protected int runTournament(List<Integer> selection) {
-        float bestScore = 0;
+        float bestScore = -10000;
         int bestSolution = 0;
+        boolean has_solution = false;
         for(int idx : selection) {
             Solution solution = individus.get(idx);
             solution.simulate(starting);
             float score = solution.score();
             if (score > bestScore) {
+                has_solution = true;
                 bestScore = score;
                 bestSolution = idx;
             }
+        }
+        if (!has_solution) {
+            System.out.println("NO SOLUTION");
         }
         return bestSolution;
     }
@@ -111,7 +117,7 @@ public abstract class AgentBase implements MarioAgent {
         }
         List<Integer> randomSelection = shuffleIndividus();
         for(int idx : randomSelection) {
-            if (random.nextFloat() < crossoverRate) {
+            if (random.nextFloat() < crossoverRate && elit >= 0) {
                 nextgen.add(crossover(
                     individus.get(elit),
                     individus.get(idx)));
@@ -121,7 +127,7 @@ public abstract class AgentBase implements MarioAgent {
                         individus.get(elit)));
                 }
             } else {
-                nextgen.add(offspring(individus.get(elit)));
+                nextgen.add(offspring(individus.get(idx)));
             }
             if (nextgen.size() >= population) {
                 break;

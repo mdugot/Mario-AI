@@ -1,5 +1,6 @@
 package levelGenerators.ngram;
 
+import java.util.Random;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -13,6 +14,7 @@ import levelGenerators.ngram.TransitionTable;
 
 public class NGram {
 
+    static Random rand;
     TransitionTable table;
     int deepness;
 
@@ -97,7 +99,11 @@ public class NGram {
         return level;
     }
 
-    public NGram(String directory, int deepness) {
+    public NGram(String directory, int deepness, long seed) {
+        rand = new Random();
+        if (seed >= 0) {
+            rand.setSeed(seed);
+        }
         this.deepness = deepness;
         File folder = new File(directory);
         System.out.println("load corpus files contents");
@@ -118,10 +124,10 @@ public class NGram {
         return builder.toString();
     }
 
-    public static String randomLevel() {
-        NGram ngram = new NGram("levels/original", 4);
+    public static String randomLevel(int length, long seed) {
+        NGram ngram = new NGram("levels/original", 4, seed);
         System.out.print("GENERATE\n");
-        List<String> level = ngram.generate(20);
+        List<String> level = ngram.generate(length);
         System.out.println("size : " + level.size());
         return ngram.format(level);
     }

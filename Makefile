@@ -13,4 +13,4 @@ clean:
 
 .PHONY: play
 play:
-	java -cp class PlayLevel
+	java -cp class PlayLevel $(SEED)
