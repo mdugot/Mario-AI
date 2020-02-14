@@ -29,10 +29,10 @@ public abstract class Solution {
         (new boolean[]{true, false, false, true, true})
     ));
 
-    static int ticks = 20;
-    static int seconds = 5;
-    static int granularity = 5;
-    static int length = (seconds * ticks) / granularity;
+    public static int ticks = 20;
+    public static int seconds = 5;
+    public static int granularity = 5;
+    public static int length = (seconds * ticks) / granularity;
     static Random random = new Random();
 
     private byte[] chromosome;

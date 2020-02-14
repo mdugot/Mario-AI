@@ -10,21 +10,36 @@ import engine.core.MarioForwardModel;
 import engine.core.MarioTimer;
 import engine.helper.MarioActions;
 
-public class Agent implements MarioAgent {
+public class Agent extends AgentBase {
 
-    static int population = 50;
-    static int generations = 500;
-    static float tournamentRatio = 0.15f;
-    static int tournamentSize = (int)(population * tournamentRatio);
-    static float mutationRate = 0.02f;
-    static float crossoverRate = 0.5f;
-    static boolean elitism = true;
-    static Random random = new Random();
+    public Agent(
+        int population,
+        int generations,
+        float tournamentRatio,
+        float mutationRate,
+        float crossoverRate,
+        boolean elitism,
+        int ticks,
+        int seconds,
+        int granularity
+    ) {
+        super(
+            population,
+            generations,
+            tournamentRatio,
+            mutationRate,
+            crossoverRate,
+            elitism,
+            ticks,
+            seconds,
+            granularity
+        );
+    }
 
-    List<Solution> individus;
-    int elit = -1;
-    int realStep = 0;
-    MarioForwardModel starting = null;
+    public Agent() {
+        super();
+    }
+
 
     @Override
     public void initialize(MarioForwardModel model, MarioTimer timer) {
@@ -46,82 +61,21 @@ public class Agent implements MarioAgent {
         return "GeneticAlgorithm";
     }
 
-    private List<Integer> shuffleIndividus() {
-        List<Integer> randRange = new ArrayList<Integer>();
-        for (int n : IntStream.range(0, population).toArray()) {
-            randRange.add(n);
-        }
-        Collections.shuffle(randRange);
-        return randRange;
+    protected Solution randomSolution() {
+        return new BasicSolution();
     }
 
-    private void generateFirstGeneration() {
-        individus = new ArrayList<Solution>();
-        for (int i = 0; i < population; i++) {
-            individus.add(new BasicSolution());
-        }
+    protected Solution offspring(Solution parent) {
+        return new BasicSolution(
+            parent,
+            mutationRate);
     }
 
-    private List<Integer> selectForTournament() {
-        List<Integer> result = new ArrayList<Integer>();
-        List<Integer> individus = shuffleIndividus();
-        if (elitism && elit >= 0) {
-            result.add(elit);
-        }
-        int idx = 0;
-        while (result.size() < tournamentSize) {
-            int individu = individus.get(idx);
-            if (!elitism || individu != elit) {
-                result.add(individu);
-            }
-            idx += 1;
-        }
-        return result;
-    }
-
-    private int runTournament(List<Integer> selection) {
-        float bestScore = 0;
-        int bestSolution = 0;
-        for(int idx : selection) {
-            Solution solution = individus.get(idx);
-            solution.simulate(starting);
-            float score = solution.score();
-            if (score > bestScore) {
-                bestScore = score;
-                bestSolution = idx;
-            }
-        }
-        return bestSolution;
-    }
-
-    private void generateNextGeneration() {
-        List<Solution> nextgen = new ArrayList<Solution>();
-        if (elitism && elit >= 0) {
-            nextgen.add(individus.get(elit));
-        }
-        List<Integer> randomSelection = shuffleIndividus();
-        for(int idx : randomSelection) {
-            if (random.nextFloat() < crossoverRate) {
-                nextgen.add(new BasicSolution(
-                    individus.get(elit),
-                    individus.get(idx),
-                    mutationRate));
-                if (nextgen.size() < population) {
-                    nextgen.add(new BasicSolution(
-                        individus.get(idx),
-                        individus.get(elit),
-                        mutationRate));
-                }
-            } else {
-                nextgen.add(new BasicSolution(
-                    individus.get(elit),
-                    mutationRate));
-            }
-            if (nextgen.size() >= population) {
-                break;
-            }
-        }
-        individus = nextgen;
+    protected Solution crossover(Solution parent1, Solution parent2) {
+        return new BasicSolution(
+            parent1,
+            parent2,
+            mutationRate);
     }
 
     private void selectSolution() {
