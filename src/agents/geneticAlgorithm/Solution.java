@@ -33,7 +33,7 @@ public abstract class Solution {
     public static int seconds = 5;
     public static int granularity = 5;
     public static int length = (seconds * ticks) / granularity;
-    static Random random = new Random();
+    static Random random = AgentBase.random;
 
     private byte[] chromosome;
     public List<MarioForwardModel> snapshots;

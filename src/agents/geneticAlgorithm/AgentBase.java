@@ -12,6 +12,7 @@ import engine.helper.MarioActions;
 
 public abstract class AgentBase implements MarioAgent {
 
+    static Random random = new Random();
     int population = 50;
     int generations = 500;
     float tournamentRatio = 0.15f;
@@ -19,7 +20,6 @@ public abstract class AgentBase implements MarioAgent {
     float mutationRate = 0.02f;
     float crossoverRate = 0.5f;
     boolean elitism = true;
-    Random random = new Random();
     int elit = -1;
     int realStep = 0;
     MarioForwardModel starting = null;
