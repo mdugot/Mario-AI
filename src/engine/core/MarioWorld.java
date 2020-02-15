@@ -291,6 +291,7 @@ public class MarioWorld {
     }
 
     public void update(boolean[] actions) {
+        this.currentTick += 1;
         if (this.gameStatus != GameStatus.RUNNING) {
             return;
         }
@@ -310,7 +311,6 @@ public class MarioWorld {
                 return;
             }
         }
-        this.currentTick += 1;
         this.cameraX = this.mario.x - MarioGame.width / 2;
         if (this.cameraX + MarioGame.width > this.level.width) {
             this.cameraX = this.level.width - MarioGame.width;

@@ -125,7 +125,7 @@ public class NGram {
     }
 
     public static String randomLevel(int length, long seed) {
-        NGram ngram = new NGram("levels/original", 4, seed);
+        NGram ngram = new NGram("levels/ngram", 3, seed);
         System.out.print("GENERATE\n");
         List<String> level = ngram.generate(length);
         System.out.println("size : " + level.size());

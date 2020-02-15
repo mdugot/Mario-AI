@@ -69,6 +69,7 @@ public class RealTimeAgent extends AgentBase {
 
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
+        System.out.println("tick : " + model.world.currentTick + "/" + realStep);
         if ((int)(currentGenStep / Solution.granularity) >= usageLength) {
             slide();
         }
