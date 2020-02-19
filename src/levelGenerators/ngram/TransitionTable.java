@@ -53,7 +53,7 @@ public class TransitionTable {
     }
 
     private boolean canContinueUntil(int steps) {
-        if (steps < 1) {
+        if (steps <= 1) {
             return true;
         }
         for (TransitionTable table : nextSlides.values()) {
@@ -64,31 +64,31 @@ public class TransitionTable {
         return false;
     }
 
-    private String getRandom(int deepness) {
-        List<Integer> randRange = new ArrayList<Integer>();
-        for (int n : IntStream.range(0, getTotalCount()).toArray()) {
-            randRange.add(n);
-        }
-        Collections.shuffle(randRange, NGram.rand);
-        for (Integer randn : randRange) {
-            int count = 0;
-            for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
-                count += entry.getValue();
-                if (randn < count) {
-                    if (root.nextSlides.get(entry.getKey()).canContinueUntil(deepness)) {
-                        return entry.getKey();
-                    }
-                    break;
-                }
-            }
-        }
-        System.out.println("deepness : " + deepness);
-        System.out.println("counts : " + counts.size());
-        System.out.println("slide : " + (String)counts.keySet().toArray()[0]);
-        System.out.println("root size : " + root.nextSlides.size());
-        System.out.println("next counts : " + root.nextSlides.get(counts.keySet().toArray()[0]).counts.size());
-        return null;
-    }
+    // private String getRandom(int deepness) {
+    //     List<Integer> randRange = new ArrayList<Integer>();
+    //     for (int n : IntStream.range(0, getTotalCount()).toArray()) {
+    //         randRange.add(n);
+    //     }
+    //     Collections.shuffle(randRange, NGram.rand);
+    //     for (Integer randn : randRange) {
+    //         int count = 0;
+    //         for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
+    //             count += entry.getValue();
+    //             if (randn < count) {
+    //                 if (root.nextSlides.get(entry.getKey()).canContinueUntil(deepness)) {
+    //                     return entry.getKey();
+    //                 }
+    //                 break;
+    //             }
+    //         }
+    //     }
+    //     System.out.println("deepness : " + deepness);
+    //     System.out.println("counts : " + counts.size());
+    //     System.out.println("slide : " + (String)counts.keySet().toArray()[0]);
+    //     System.out.println("root size : " + root.nextSlides.size());
+    //     System.out.println("next counts : " + root.nextSlides.get(counts.keySet().toArray()[0]).counts.size());
+    //     return null;
+    // }
 
     private String getLogRandom(int deepness) {
         while (counts.size() >= 1) {
@@ -109,13 +109,25 @@ public class TransitionTable {
         return null;
     }
 
-    public String chooseSlide(List<String> previousSlides, int deepness) {
+    private String _chooseSlide(List<String> previousSlides, int deepness) {
         if (previousSlides == null || previousSlides.size() == 0) {
             String slide = getLogRandom(deepness);
             return slide;
         }
         String fromSlide = previousSlides.remove(0);
         System.out.println(fromSlide);
-        return nextSlides.get(fromSlide).chooseSlide(previousSlides, deepness);
+        if (nextSlides.containsKey(fromSlide) == false) {
+            return null;
+        }
+        return nextSlides.get(fromSlide)._chooseSlide(previousSlides, deepness);
+    }
+
+    public String chooseSlide(ArrayList<String> previousSlides, int deepness) {
+        String result = _chooseSlide(((ArrayList)previousSlides.clone()), deepness); 
+        while (result == null) {
+            previousSlides.remove(0);
+            result = _chooseSlide(((ArrayList)previousSlides.clone()), deepness); 
+        }
+        return result;
     }
 }

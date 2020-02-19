@@ -101,7 +101,7 @@ public class NGram {
             if (level.size() < deepness) {
                 level.add(table.chooseSlide((ArrayList)level.clone(), Math.min(deepness, size - i)));
             } else {
-                List previous = ((ArrayList)level.clone()).subList(level.size() - deepness, level.size());
+                ArrayList<String> previous = new ArrayList<String>(((ArrayList)level.clone()).subList(level.size() - deepness, level.size()));
                 String next = table.chooseSlide(previous, Math.min(deepness, size - i));
                 level.add(next);
             }
@@ -135,7 +135,7 @@ public class NGram {
     }
 
     public static String randomLevel(int length, long seed) {
-        NGram ngram = new NGram("levels/ngram", 3, seed);
+        NGram ngram = new NGram("levels/ngram", 4, seed);
         System.out.print("GENERATE\n");
         List<String> level = ngram.generate(length);
         System.out.println("size : " + level.size());
