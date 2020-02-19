@@ -115,6 +115,7 @@ public class TransitionTable {
             return slide;
         }
         String fromSlide = previousSlides.remove(0);
+        System.out.println(fromSlide);
         return nextSlides.get(fromSlide).chooseSlide(previousSlides, deepness);
     }
 }

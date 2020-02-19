@@ -3,12 +3,14 @@ package agents.geneticAlgorithm;
 import java.lang.Thread;
 import java.util.Collections;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import engine.core.MarioAgent;
 import engine.core.MarioForwardModel;
 import engine.core.MarioTimer;
 import engine.helper.MarioActions;
+import engine.helper.GameStatus;
 
 
 public class RealTimeAgent extends AgentBase {
@@ -16,13 +18,10 @@ public class RealTimeAgent extends AgentBase {
     int currentGeneration = 0;
     float usageLengthRatio = 0.5f;
     int usageLength;
-    int currentGenStep = 0;
     long currentGenerationStart;
     Solution choosenSolution = null;
-    MarioForwardModel currentModel;
+    MarioForwardModel currentGenStarting;
 
-
-    boolean sliding = false;
 
     public RealTimeAgent() {
         super(
@@ -50,7 +49,8 @@ public class RealTimeAgent extends AgentBase {
                 infiniteSelection();
             }
         }).start();
-        starting = model;
+        starting = model.clone();
+        currentGenStarting = null;
         generateFirstGeneration();
         long startTime = System.nanoTime();
         while (currentGeneration < generations) {
@@ -63,21 +63,24 @@ public class RealTimeAgent extends AgentBase {
         }
         long duration = System.nanoTime() - startTime;
         System.out.println("Selection time : "  + ((double)duration / (double)1_000_000_000));
-        slide();
+        slide(model);
         System.out.println("ok");
     }
 
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
-        System.out.println("tick : " + model.world.currentTick + "/" + realStep);
-        if ((int)(currentGenStep / Solution.granularity) >= usageLength) {
-            slide();
+        System.out.println("tick : " + model.world.currentTick);
+        System.out.println("step : " + choosenSolution.getStep(currentGenStarting.world.currentTick, model.world.currentTick));
+        if (choosenSolution.getStep(
+            currentGenStarting.world.currentTick,
+            model.world.currentTick) >= usageLength)
+        {
+            slide(model);
+            return getActions(model, timer);
         }
-        boolean[] action = choosenSolution.getAction(currentGenStep);
-        currentModel = model;
-        currentModel.advance(action);
-        realStep += 1;
-        currentGenStep += 1;
+        boolean[] action = choosenSolution.getAction(
+            currentGenStarting.world.currentTick,
+            model.world.currentTick);
         return action;
     }
 
@@ -117,49 +120,56 @@ public class RealTimeAgent extends AgentBase {
             0.0f);
     }
 
-    synchronized void slideStarting() {
-        if (currentModel != null) {
-            starting = currentModel.clone();
-        }
-        int tmpStep = 0;
-        for (int i = 0; i < usageLength; i++) {
-            for (int j = 0; j < Solution.granularity; j++) {
-                starting.advance(choosenSolution.getAction(tmpStep));
-                tmpStep += 1;
+    synchronized void slideStarting(MarioForwardModel current) {
+        currentGenStarting = starting.clone();
+        starting = current.clone();
+        while (choosenSolution.getStep(
+                currentGenStarting.world.currentTick,
+                starting.world.currentTick
+        ) < usageLength) {
+            boolean[] actions = choosenSolution.getAction(
+                currentGenStarting.world.currentTick,
+                starting.world.currentTick);
+            if (actions == null) {
+                return;
             }
+            if (starting.getGameStatus() != GameStatus.RUNNING) {
+                return;
+            }
+            starting.advance(actions);
         }
+        System.out.println("new starting : " + starting.world.currentTick);
     }
 
 
-    synchronized private void slide() {
-        sliding = true;
+    synchronized private void slide(MarioForwardModel current) {
         long duration = System.nanoTime() - currentGenerationStart;
         System.out.println("\nSTART SLIDING");
         System.out.println("elit : " + elit);
         System.out.println("\nSlide after " + currentGeneration + " generations");
-        System.out.println("Slide after " + currentGenStep + " steps");
         System.out.println("Slide after "  + ((double)duration / (double)1_000_000_000) + " seconds");
         currentGenerationStart = System.nanoTime();
-        currentGenStep = 0;
-        // List<MarioForwardModel> snapshots = individus.get(elit).snapshots;
-        // if (snapshots.size() >= usageLength) {
-        //     if (snapshots.size() == usageLength) {
-        //         System.out.println("Mario should die : " + snapshots.size() + "/" + usageLength);
-        //     } else {
-        //         System.out.println("snapshots : " + snapshots.size() + "/" + usageLength);
-        //     }
-        //     starting = snapshots.get(usageLength - 1);
-        // } else {
-        //     System.out.println("Mario should die : " + snapshots.size() + "/" + usageLength);
-        // }
-
         // DEBUG /////
+        System.out.println("same Level ? " + Arrays.deepEquals(starting.world.level.levelTiles, current.world.level.levelTiles));
+        System.out.println("same Times ? " + Arrays.deepEquals(starting.world.level.lastSpawnTime, current.world.level.lastSpawnTime));
+        System.out.println("FROM STARTING");
+        System.out.println("starting step : " + starting.world.currentTick);
+        individus.get(elit).simulate(starting, true);
+        System.out.println("____________");
+        System.out.println("FROM CURRENT");
+        System.out.println("current step : " + current.world.currentTick);
+        individus.get(elit).simulate(current, true);
+        System.out.println("____________");
+        System.out.println("FROM CURRENT CLONE");
+        individus.get(elit).simulate(current.clone(), true);
+        System.out.println("____________");
         List<MarioForwardModel> snapshots = individus.get(elit).snapshots;
-        System.out.println("snapshots : " + snapshots.size() + "/" + usageLength);
+        System.out.println("snapshots : " + snapshots.size() + "/16");
         //////////////
 
+
         choosenSolution = clone(individus.get(elit));
-        slideStarting();
+        slideStarting(current);
         List<Solution> nextgen = new ArrayList<Solution>();
         for(int idx = 0; idx < individus.size(); idx++) {
             nextgen.add(slideCrossover(
@@ -170,11 +180,9 @@ public class RealTimeAgent extends AgentBase {
         individus = nextgen;
         System.out.println("elit : " + elit);
         System.out.println("\nEND SLIDING");
-        sliding = false;
     }
 
     synchronized private void nextGeneration() {
-        if (sliding) System.out.println("Selecting while sliding !!!!!!!!!!!!!!!!!!!!");
         List<Integer> selection = selectForTournament();
         generateNextGeneration();
         elit = runTournament(selection);

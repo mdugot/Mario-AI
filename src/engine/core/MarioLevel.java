@@ -2,6 +2,7 @@ package engine.core;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import engine.graphics.MarioImage;
 import engine.graphics.MarioTilemap;
@@ -18,9 +19,9 @@ public class MarioLevel {
     public int totalCoins = 0;
     public int marioTileX, marioTileY, exitTileX, exitTileY;
 
-    private int[][] levelTiles;
+    public int[][] levelTiles;
     private SpriteType[][] spriteTemplates;
-    private int[][] lastSpawnTime;
+    public int[][] lastSpawnTime;
     private MarioTilemap graphics;
     private MarioImage flag;
 

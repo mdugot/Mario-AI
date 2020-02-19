@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Collections;
 import java.lang.StringBuilder;
 
 import levelGenerators.ngram.TransitionTable;
@@ -63,24 +64,33 @@ public class NGram {
         }
     }
 
+    private void forwardBuilding(List<String> level, TransitionTable table) {
+        List<String> slides = new ArrayList<String>();
+        for (int i = 0; i < deepness + 1; i++) {
+            slides.add(level.get(i));
+        }
+        table.addSlides(slides);
+        for (int i = deepness + 1; i < level.size(); i++) {
+            slides.remove(0);
+            slides.add(level.get(i));
+            table.addSlides(slides);
+        }
+        while (slides.size() > 1) {
+            slides.remove(0);
+            table.addSlides(slides);
+        }
+    }
+
+    private void backwardBuilding(List<String> level, TransitionTable table) {
+        Collections.reverse(level);
+        forwardBuilding(level, table);
+    }
+
     private TransitionTable buildTable(List<List<String>> levels) {
         TransitionTable table = new TransitionTable(null);
-        List<String> slides = new ArrayList<String>();
         for (List<String> level : levels) {
-            slides.clear();
-            for (int i = 0; i < deepness + 1; i++) {
-                slides.add(level.get(i));
-            }
-            table.addSlides(slides);
-            for (int i = deepness + 1; i < level.size(); i++) {
-                slides.remove(0);
-                slides.add(level.get(i));
-                table.addSlides(slides);
-            }
-            while (slides.size() > 1) {
-                slides.remove(0);
-                table.addSlides(slides);
-            }
+            forwardBuilding(level, table);
+            backwardBuilding(level, table);
         }
         return table;
     }

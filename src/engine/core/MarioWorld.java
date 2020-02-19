@@ -105,6 +105,17 @@ public class MarioWorld {
         return enemies;
     }
 
+    // public Mario mario;
+    // public MarioLevel level;
+    // public ArrayList<MarioEvent> lastFrameEvents;
+
+    // private MarioEvent[] killEvents;
+    // private ArrayList<MarioSprite> sprites;
+    // private ArrayList<Shell> shellsToCheck;
+    // private ArrayList<Fireball> fireballsToCheck;
+    // private ArrayList<MarioSprite> addedSprites;
+    // private ArrayList<MarioSprite> removedSprites;
+
     public MarioWorld clone() {
         MarioWorld world = new MarioWorld(this.killEvents);
         world.visuals = false;
@@ -291,7 +302,6 @@ public class MarioWorld {
     }
 
     public void update(boolean[] actions) {
-        this.currentTick += 1;
         if (this.gameStatus != GameStatus.RUNNING) {
             return;
         }
@@ -311,6 +321,7 @@ public class MarioWorld {
                 return;
             }
         }
+        this.currentTick += 1;
         this.cameraX = this.mario.x - MarioGame.width / 2;
         if (this.cameraX + MarioGame.width > this.level.width) {
             this.cameraX = this.level.width - MarioGame.width;

@@ -93,19 +93,14 @@ public abstract class AgentBase implements MarioAgent {
     protected int runTournament(List<Integer> selection) {
         float bestScore = -10000;
         int bestSolution = 0;
-        boolean has_solution = false;
         for(int idx : selection) {
             Solution solution = individus.get(idx);
             solution.simulate(starting);
             float score = solution.score();
             if (score > bestScore) {
-                has_solution = true;
                 bestScore = score;
                 bestSolution = idx;
             }
-        }
-        if (!has_solution) {
-            System.out.println("NO SOLUTION");
         }
         return bestSolution;
     }

@@ -37,7 +37,6 @@ public abstract class Solution {
 
     private byte[] chromosome;
     public List<MarioForwardModel> snapshots;
-    private int last = -1;
 
     public Solution() {
         chromosome = new byte[length];
@@ -86,34 +85,50 @@ public abstract class Solution {
         }
     }
 
-    public boolean[] getAction(int realStep) {
-        int step = realStep / granularity;
+    public int getStep(int startStep, int realStep) {
+        return (realStep - startStep) / granularity;
+    }
+
+    public boolean[] getAction(int startStep, int realStep) {
+        int step = getStep(startStep, realStep);
         if (step >= chromosome.length) {
-            System.out.println("all actions used");
-            return actions.get(0);
+            return null;
         }
         return actions.get(chromosome[step]);
     }
 
     public void simulate(MarioForwardModel starting) {
+        simulate(starting, false);
+    }
+
+    public void simulate(MarioForwardModel starting, boolean verbose) {
         MarioForwardModel model = starting.clone();
         snapshots.clear();
-        for (int i = 0; i < length; i++) {
-            last = i;
-            for (int j = 0; j < granularity; j++) {
-                model.advance(actions.get(chromosome[i]));
-                GameStatus status = model.getGameStatus();
-                if (status != GameStatus.RUNNING) {
-                    snapshots.add(model.clone());
-                    return;
-                }
+        int currentStep = 0;
+        int lastStep = 0;
+        while (true) {
+            boolean[] actions = getAction(starting.world.currentTick, model.world.currentTick);
+            if (actions == null) {
+                return;
             }
-            snapshots.add(model.clone());
+            lastStep = getStep(starting.world.currentTick, model.world.currentTick);
+            model.advance(actions);
+            GameStatus status = model.getGameStatus();
+            if (status != GameStatus.RUNNING) {
+                if (verbose)
+                    System.out.println("Mario should die");
+                snapshots.add(model.clone());
+                return;
+            }
+            currentStep = getStep(starting.world.currentTick, model.world.currentTick);
+            if (currentStep > lastStep) {
+                snapshots.add(model.clone());
+            }
         }
     }
 
     public float score() {
-        MarioForwardModel model = snapshots.get(last);
+        MarioForwardModel model = snapshots.get(snapshots.size() - 1);
         float score = 0;
         if (model.getGameStatus() == GameStatus.WIN) {
             score += 1024;
