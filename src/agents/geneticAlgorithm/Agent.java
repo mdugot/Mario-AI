@@ -51,7 +51,7 @@ public class Agent extends AgentBase {
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
         Solution solution = individus.get(elit);
-        boolean[] action = solution.getAction(realStep);
+        boolean[] action = solution.getAction(0, realStep);
         realStep += 1;
         return action;
     }
