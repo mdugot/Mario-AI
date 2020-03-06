@@ -17,6 +17,7 @@ public class NGram {
 
     static Random rand;
     TransitionTable table;
+    TransitionTable firstSlides = new TransitionTable(null);
     int deepness;
 
     private List<String> parseLevelSlides(File file) throws IOException
@@ -68,6 +69,9 @@ public class NGram {
         List<String> slides = new ArrayList<String>();
         for (int i = 0; i < deepness + 1; i++) {
             slides.add(level.get(i));
+            if (i == 0) {
+                firstSlides.addSlides(slides);
+            }
         }
         table.addSlides(slides);
         for (int i = deepness + 1; i < level.size(); i++) {
@@ -98,11 +102,23 @@ public class NGram {
     public List<String> generate(int size) {
         ArrayList<String> level = new ArrayList<String>();
         for (int i = 0; i < size; i++) {
-            if (level.size() < deepness) {
-                level.add(table.chooseSlide((ArrayList)level.clone(), Math.min(deepness, size - i)));
+            if (level.size() == 0) {
+                level.add(firstSlides.chooseSlide(null));
+            } else if (level.size() < deepness) {
+                level.add(table.chooseSlide((ArrayList)level.clone()));
             } else {
-                List previous = ((ArrayList)level.clone()).subList(level.size() - deepness, level.size());
-                String next = table.chooseSlide(previous, Math.min(deepness, size - i));
+                System.out.println("\nLEVEL :");
+                for (String slide : level) {
+                    System.out.println(slide);
+                }
+                List<String> previous = ((ArrayList)level.clone()).subList(level.size() - deepness, level.size());
+                System.out.println("PREVIOUS :");
+                for (String slide : previous) {
+                    System.out.println(slide);
+                }
+                String next = table.chooseSlide(previous);
+                System.out.print("next slide > ");
+                System.out.println(next);
                 level.add(next);
             }
         }

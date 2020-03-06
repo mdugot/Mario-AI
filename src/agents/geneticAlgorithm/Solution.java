@@ -139,7 +139,7 @@ public abstract class Solution {
         score += model.getKillsByStomp() * 12;
         score += model.getKillsByFire() * 4;
         score += model.getKillsByShell() * 17;
-        score += (300 - model.getMarioFloatPos()[1]) / 10;
+        score += (300 - model.getMarioFloatPos()[1]) / 3;
         score += model.getMarioMode() * 32;
         score += model.getNumCollectedCoins() * 16;
         score += model.getNumCollectedMushrooms() * 58;
