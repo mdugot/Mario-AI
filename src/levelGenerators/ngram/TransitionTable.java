@@ -53,7 +53,7 @@ public class TransitionTable {
     }
 
     private boolean canContinueUntil(int steps) {
-        if (steps < 1) {
+        if (steps <= 1) {
             return true;
         }
         for (TransitionTable table : nextSlides.values()) {
@@ -65,24 +65,22 @@ public class TransitionTable {
     }
 
     private String getLogRandom() {
-        while (counts.size() >= 1) {
-            System.out.print("number choices (counts) : ");
-            System.out.println(counts.size());
-            System.out.print("number choices (next) : ");
-            System.out.println(nextSlides.size());
-            double totalLogCount = getTotalLogCount();
-            double randn = NGram.rand.nextDouble() * totalLogCount;
-            double count = 0.0;
-            for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
-                System.out.print("choice > ");
-                System.out.println(entry.getKey());
-                count += Math.log((double)entry.getValue() + 1);
-                if (randn <= count) {
-                    return entry.getKey();
-                }
+        System.out.print("number choices (counts) : ");
+        System.out.println(counts.size());
+        System.out.print("number choices (next) : ");
+        System.out.println(nextSlides.size());
+        double totalLogCount = getTotalLogCount();
+        double randn = NGram.rand.nextDouble() * totalLogCount;
+        double count = 0.0;
+        for (HashMap.Entry<String, Integer> entry : counts.entrySet()) {
+            System.out.print("choice > ");
+            System.out.println(entry.getKey());
+            count += Math.log((double)entry.getValue() + 1);
+            if (randn <= count) {
+                return entry.getKey();
             }
         }
-        return new String("----------------");
+        return new String("--------------XX");
     }
 
     public String chooseSlide(List<String> previousSlides) {
