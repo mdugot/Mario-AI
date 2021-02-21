@@ -126,10 +126,10 @@ public class NGram {
         rlevels.add(replace(level, "U", "C"));
         rlevels.add(replace(level, "C", "U"));
         rlevels.add(replace(level, "o", "-"));
-        rlevels.add(replace(level, "!", "?"));
-        rlevels.add(replace(level, "?", "!"));
+        rlevels.add(replace(level, "!", "@"));
+        rlevels.add(replace(level, "@", "!"));
         rlevels.add(replace(level, "!", "U"));
-        rlevels.add(replace(level, "?", "U"));
+        rlevels.add(replace(level, "@", "U"));
         rlevels.add(replace(level, "U", "!"));
         return rlevels;
     }
@@ -137,7 +137,7 @@ public class NGram {
     private TransitionTable buildTable(List<List<String>> levels) {
         TransitionTable table = new TransitionTable(null);
         for (List<String> level : levels) {
-            level = replace(replace(replace(replace(level, "F", "-"), "M", "-"), "@", "?"), "Q", "!");
+            level = replace(replace(replace(replace(level, "F", "-"), "M", "-"), "\\?", "@"), "Q", "!");
             List<List<String>> rlevels = randomization(level);
             for (List<String> rlevel : rlevels) {
                 forwardBuilding(rlevel, table);
@@ -189,7 +189,7 @@ public class NGram {
     }
 
     public static String randomLevel(int length, long seed) {
-        NGram ngram = new NGram("levels/ngram", 4, seed);
+        NGram ngram = new NGram("levels/ngram", 3, seed);
         System.out.print("GENERATE\n");
         List<String> level = ngram.generate(length);
         System.out.println("size : " + level.size());
