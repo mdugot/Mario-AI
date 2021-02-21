@@ -27,13 +27,13 @@ git clone https://github.com/mdugot/Mario-AI.git
 cd Mario-AI
 make
 ```
-Use jave to execute the JAR.
+Use jave to execute the JAR. It will generate a random level and let the AI solve it.
 
 ```
 java -jar run.jar
 ```
 
-You can give an number as argument to the program that will be used as the seed used for the level random generation.
+The progam accept as first argument a number that will be used as the seed for the level random generation.
 It allow you to play multiple time the same level.
 
 ```
