@@ -69,8 +69,6 @@ public class RealTimeAgent extends AgentBase {
 
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
-        System.out.println("tick : " + model.world.currentTick);
-        System.out.println("step : " + choosenSolution.getStep(currentGenStarting.world.currentTick, model.world.currentTick));
         if (choosenSolution.getStep(
             currentGenStarting.world.currentTick,
             model.world.currentTick) >= usageLength)
@@ -138,33 +136,17 @@ public class RealTimeAgent extends AgentBase {
             }
             starting.advance(actions);
         }
-        System.out.println("new starting : " + starting.world.currentTick);
     }
 
 
     synchronized private void slide(MarioForwardModel current) {
         long duration = System.nanoTime() - currentGenerationStart;
-        System.out.println("\nSTART SLIDING");
-        System.out.println("elit : " + elit);
-        System.out.println("\nSlide after " + currentGeneration + " generations");
-        System.out.println("Slide after "  + ((double)duration / (double)1_000_000_000) + " seconds");
         currentGenerationStart = System.nanoTime();
         // DEBUG /////
-        System.out.println("same Level ? " + Arrays.deepEquals(starting.world.level.levelTiles, current.world.level.levelTiles));
-        System.out.println("same Times ? " + Arrays.deepEquals(starting.world.level.lastSpawnTime, current.world.level.lastSpawnTime));
-        System.out.println("FROM STARTING");
-        System.out.println("starting step : " + starting.world.currentTick);
-        individus.get(elit).simulate(starting, true);
-        System.out.println("____________");
-        System.out.println("FROM CURRENT");
-        System.out.println("current step : " + current.world.currentTick);
-        individus.get(elit).simulate(current, true);
-        System.out.println("____________");
-        System.out.println("FROM CURRENT CLONE");
-        individus.get(elit).simulate(current.clone(), true);
-        System.out.println("____________");
-        List<MarioForwardModel> snapshots = individus.get(elit).snapshots;
-        System.out.println("snapshots : " + snapshots.size() + "/16");
+        // individus.get(elit).simulate(starting, true);
+        // individus.get(elit).simulate(current, true);
+        // individus.get(elit).simulate(current.clone(), true);
+        // List<MarioForwardModel> snapshots = individus.get(elit).snapshots;
         //////////////
 
 
@@ -178,8 +160,6 @@ public class RealTimeAgent extends AgentBase {
         }
         currentGeneration = 0;
         individus = nextgen;
-        System.out.println("elit : " + elit);
-        System.out.println("\nEND SLIDING");
     }
 
     synchronized private void nextGeneration() {

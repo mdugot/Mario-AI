@@ -7,7 +7,6 @@ import java.awt.event.KeyAdapter;
 
 import javax.swing.JFrame;
 
-import agents.human.Agent;
 import engine.helper.GameStatus;
 import engine.helper.MarioActions;
 
@@ -85,56 +84,6 @@ public class MarioGame {
         if (agent instanceof KeyAdapter) {
             this.render.addKeyListener((KeyAdapter) this.agent);
         }
-    }
-
-    /**
-     * Play a certain mario level
-     *
-     * @param level a string that constitutes the mario level, it uses the same representation as the VGLC but with more details. for more details about each symbol check the json file in the levels folder.
-     * @param timer number of ticks for that level to be played. Setting timer to anything <=0 will make the time infinite
-     * @return statistics about the current game
-     */
-    public MarioResult playGame(String level, int timer) {
-        return this.runGame(new Agent(), level, timer, 0, true, 30, 2);
-    }
-
-    /**
-     * Play a certain mario level
-     *
-     * @param level      a string that constitutes the mario level, it uses the same representation as the VGLC but with more details. for more details about each symbol check the json file in the levels folder.
-     * @param timer      number of ticks for that level to be played. Setting timer to anything <=0 will make the time infinite
-     * @param marioState the initial state that mario appears in. 0 small mario, 1 large mario, and 2 fire mario.
-     * @return statistics about the current game
-     */
-    public MarioResult playGame(String level, int timer, int marioState) {
-        return this.runGame(new Agent(), level, timer, marioState, true, 30, 2);
-    }
-
-    /**
-     * Play a certain mario level
-     *
-     * @param level      a string that constitutes the mario level, it uses the same representation as the VGLC but with more details. for more details about each symbol check the json file in the levels folder.
-     * @param timer      number of ticks for that level to be played. Setting timer to anything <=0 will make the time infinite
-     * @param marioState the initial state that mario appears in. 0 small mario, 1 large mario, and 2 fire mario.
-     * @param fps        the number of frames per second that the update function is following
-     * @return statistics about the current game
-     */
-    public MarioResult playGame(String level, int timer, int marioState, int fps) {
-        return this.runGame(new Agent(), level, timer, marioState, true, fps, 2);
-    }
-
-    /**
-     * Play a certain mario level
-     *
-     * @param level      a string that constitutes the mario level, it uses the same representation as the VGLC but with more details. for more details about each symbol check the json file in the levels folder.
-     * @param timer      number of ticks for that level to be played. Setting timer to anything <=0 will make the time infinite
-     * @param marioState the initial state that mario appears in. 0 small mario, 1 large mario, and 2 fire mario.
-     * @param fps        the number of frames per second that the update function is following
-     * @param scale      the screen scale, that scale value is multiplied by the actual width and height
-     * @return statistics about the current game
-     */
-    public MarioResult playGame(String level, int timer, int marioState, int fps, float scale) {
-        return this.runGame(new Agent(), level, timer, marioState, true, fps, scale);
     }
 
     /**

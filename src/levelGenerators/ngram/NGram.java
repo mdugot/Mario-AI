@@ -90,11 +90,59 @@ public class NGram {
         forwardBuilding(level, table);
     }
 
+    private List<String> replace(List<String> level, String from, String to) {
+        List<String> rlevel = new ArrayList<String>();
+        for (int i = 0; i < level.size(); i++) {
+            rlevel.add(level.get(i).replaceAll(from, to));
+        }
+        return rlevel;
+    }
+
+    private List<List<String>> randomization(List<String> level) {
+        List<List<String>> rlevels = new ArrayList<List<String>>();
+        rlevels.add(level);
+        rlevels.add(replace(level, "g", "r"));
+        rlevels.add(replace(level, "g", "k"));
+        rlevels.add(replace(level, "k", "g"));
+        rlevels.add(replace(level, "r", "g"));
+        rlevels.add(replace(level, "k", "r"));
+        rlevels.add(replace(level, "r", "k"));
+        rlevels.add(replace(level, "k", "y"));
+        rlevels.add(replace(level, "r", "y"));
+        rlevels.add(replace(level, "y", "k"));
+        rlevels.add(replace(level, "y", "r"));
+        rlevels.add(replace(level, "Y", "K"));
+        rlevels.add(replace(level, "K", "Y"));
+        rlevels.add(replace(level, "K", "G"));
+        rlevels.add(replace(level, "G", "Y"));
+        rlevels.add(replace(level, "X", "#"));
+        rlevels.add(replace(level, "#", "S"));
+        rlevels.add(replace(level, "1", "2"));
+        rlevels.add(replace(level, "2", "1"));
+        rlevels.add(replace(level, "t", "T"));
+        rlevels.add(replace(level, "T", "t"));
+        rlevels.add(replace(level, "C", "S"));
+        rlevels.add(replace(level, "S", "C"));
+        rlevels.add(replace(level, "U", "C"));
+        rlevels.add(replace(level, "C", "U"));
+        rlevels.add(replace(level, "o", "-"));
+        rlevels.add(replace(level, "!", "?"));
+        rlevels.add(replace(level, "?", "!"));
+        rlevels.add(replace(level, "!", "U"));
+        rlevels.add(replace(level, "?", "U"));
+        rlevels.add(replace(level, "U", "!"));
+        return rlevels;
+    }
+
     private TransitionTable buildTable(List<List<String>> levels) {
         TransitionTable table = new TransitionTable(null);
         for (List<String> level : levels) {
-            forwardBuilding(level, table);
-            backwardBuilding(level, table);
+            level = replace(replace(replace(replace(level, "F", "-"), "M", "-"), "@", "?"), "Q", "!");
+            List<List<String>> rlevels = randomization(level);
+            for (List<String> rlevel : rlevels) {
+                forwardBuilding(rlevel, table);
+                backwardBuilding(rlevel, table);
+            }
         }
         return table;
     }
